@@ -1,0 +1,15 @@
+# Keep the newline after each prompt
+add_newline = true
+
+# Show the battery level if under 20%
+[[battery.display]]
+threshold = 20
+
+# Show the regular bash prompt symbols
+[character]
+success_symbol = "[\\$](bold green)"
+error_symbol = "[\\$](bold red)"
+
+# Enable the Kubernetes module
+[kubernetes]
+disabled = false
