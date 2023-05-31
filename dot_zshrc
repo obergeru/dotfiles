@@ -5,3 +5,8 @@ source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 
 [ -f /etc/grc.zsh ] && source /etc/grc.zsh
 eval "$(starship init zsh)"
+
+export WORKON_HOME=$HOME/.virtualenvs
+export PROJECT_HOME=$HOME/src
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+source /usr/local/bin/virtualenvwrapper.sh
