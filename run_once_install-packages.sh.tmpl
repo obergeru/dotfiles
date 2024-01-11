@@ -1,6 +1,8 @@
 #!/bin/sh
-sudo apt-get install grc zsh
+sudo apt-get update
+sudo apt-get install grc zsh python3-pip
 git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+sudo pip install virtualenvwrapper
 
 # fzf
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
