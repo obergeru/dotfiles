@@ -17,3 +17,4 @@ export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 
 export PATH=$PATH:/snap/bin
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
