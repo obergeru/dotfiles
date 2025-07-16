@@ -1,6 +1,6 @@
 #!/bin/sh
 sudo apt-get update
-sudo apt-get install grc zsh python3-pip python3-virtualenvwrapper
+sudo apt-get install grc zsh python3-pip python3-virtualenvwrapper  build-essential
 git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
 sudo pip install virtualenvwrapper
 
@@ -26,8 +26,6 @@ chsh -s /bin/zsh
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 
-
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-
+brew install az kubectl kubectx
 
