@@ -14,6 +14,19 @@ compinit -C
 source <(kubectl completion zsh)
 compdef k=kubectl
 
+# --- AZURE CLI (az) COMPLETION ---
+# 1. Enable minimal Bash compatibility (REQUIRED to run the 'az' completion script)
+# This loads a Zsh function that knows how to interpret Bash's 'complete' command.
+autoload -U +X bashcompinit && bashcompinit
+
+# 2. Source the 'az' Bash completion script installed by Homebrew
+if type brew &>/dev/null; then
+    # Homebrew uses 'brew --prefix' to find the correct path to the completion file.
+    [ -s "$(brew --prefix)/etc/bash_completion.d/az" ] && source "$(brew --prefix)/etc/bash_completion.d/az"
+fi
+# -----------------------------------
+
+
 # fzf-tab Configuration (Set styles BEFORE sourcing the plugin)
 # Disable the default Zsh menu style, allowing fzf-tab to take over
 zstyle ':completion:*' menu no
