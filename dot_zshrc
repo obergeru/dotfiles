@@ -1,20 +1,69 @@
-set gpg first
+# --- ZSHRC START ---
+
+# 1. GPG AND TTY SETUP (Must be early)
 export GPG_TTY=$(tty)
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-[ -f ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh ] && source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-[ -f ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && source  ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-[ -f /etc/grc.zsh ] && source /etc/grc.zsh
-eval "$(starship init zsh)"
+
+# 2. ZSH COMPLETION SETUP (CRUCIAL ORDERING for FZF-TAB)
+# Initialize Zsh's standard completion system
+autoload -U compinit
+# We use the -C flag to optimize startup by loading the cache if it's new enough.
+compinit -C
+
+# Load KUBECTL COMPLETION FUNCTIONS
+# This loads the 'kubectl' completion rules and functions into Zsh.
+source <(kubectl completion zsh)
+compdef k=kubectl
+
+# fzf-tab Configuration (Set styles BEFORE sourcing the plugin)
+# Disable the default Zsh menu style, allowing fzf-tab to take over
+zstyle ':completion:*' menu no
+# Customize the fzf layout and appearance
+zstyle ':fzf-tab:complete:*:*' fzf-flags --layout=reverse --info=inline
+# Add preview to directories when completing 'cd'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -l $realpath'
+
+# Source fzf-tab (CLONED to ~/.zsh/fzf-tab)
+# This MUST be loaded after compinit and completion rules to hook into the system.
+[ -f ~/.zsh/fzf-tab/fzf-tab.plugin.zsh ] && source ~/.zsh/fzf-tab/fzf-tab.plugin.zsh
+
+# 3. HISTORY CONFIGURATION
 export HISTFILE="$HOME/.zsh_history"
 export HISTSIZE=10000
 export SAVEHIST=10000
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_FIND_NO_DUPS
 
+# 4. PLUGIN & FZF SOURCING
+# Source FZF's own key bindings and completion scripts
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Source Zsh-Autosuggestions
+[ -f ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh ] && source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# Source GRC (Generic Colouriser)
+[ -f /etc/grc.zsh ] && source /etc/grc.zsh
+
+# Source Zsh-Syntax-Highlighting
+# Syntax highlighting MUST be loaded last for optimal behavior
+[ -f ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# 5. VIRTUALENVWRAPPER SETUP
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/src
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 
+# 6. ENVIRONMENT VARIABLES & PROMPT
 export PATH=$PATH:/snap/bin
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+# Initialize Starship Prompt (Must be late)
+eval "$(starship init zsh)"
+
+# --- CUSTOM KUBECTL ALIASES ---
+alias k='kubectl'
+# You can put your custom kl/kx functions here if desired
+# kl() { ... }
+# kx() { ... }
+
+# --- ZSHRC END ---
