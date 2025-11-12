@@ -75,6 +75,11 @@ eval "$(starship init zsh)"
 
 # --- CUSTOM KUBECTL ALIASES ---
 alias k='kubectl'
+
+# get argocdpasswd from kubernetes
+alias argopasswd='printf "%s" "$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)" | xclip -selection clipboard'
+alias ddpasswd='printf "%s" "$(kubectl -n defectdojo get secret defectdojo-credentials -o jsonpath="{.data.admin_password}" | base64 -d)" | xclip -selection clipboard'
+
 # You can put your custom kl/kx functions here if desired
 # kl() { ... }
 # kx() { ... }
