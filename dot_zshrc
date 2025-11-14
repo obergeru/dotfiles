@@ -14,6 +14,12 @@ compinit -C
 source <(kubectl completion zsh)
 compdef k=kubectl
 
+# autocomplete for helm
+source <(helm completion zsh)
+
+# autcomplete for chezmoi
+source <(chezmoi completion zsh)
+
 # --- AZURE CLI (az) COMPLETION ---
 # 1. Enable minimal Bash compatibility (REQUIRED to run the 'az' completion script)
 # This loads a Zsh function that knows how to interpret Bash's 'complete' command.
@@ -79,7 +85,6 @@ alias k='kubectl'
 # get argocdpasswd from kubernetes
 alias argopasswd='printf "%s" "$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)" | xclip -selection clipboard'
 alias ddpasswd='printf "%s" "$(kubectl -n defectdojo get secret defectdojo -o jsonpath="{.data.DD_ADMIN_PASSWORD}" | base64 -d)" | xclip -selection clipboard'
-
 
 # You can put your custom kl/kx functions here if desired
 # kl() { ... }
