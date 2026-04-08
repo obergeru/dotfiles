@@ -1,0 +1,96 @@
+# --- ZSHRC START ---
+
+# 1. GPG AND TTY SETUP (Must be early)
+export GPG_TTY=$(tty)
+
+# 2. HOMEBREW SETUP (Must be before any 'brew' references)
+{{- if eq .chezmoi.os "darwin" }}
+eval "$(/opt/homebrew/bin/brew shellenv)"
+{{- else if stat "/home/linuxbrew/.linuxbrew/bin/brew" }}
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+{{- end }}
+
+# 3. ZSH COMPLETION SETUP (CRUCIAL ORDERING for FZF-TAB)
+# Initialize Zsh's standard completion system
+autoload -U compinit
+# We use the -C flag to optimize startup by loading the cache if it's new enough.
+compinit -C
+
+# Load KUBECTL COMPLETION FUNCTIONS
+# This loads the 'kubectl' completion rules and functions into Zsh.
+source <(kubectl completion zsh)
+compdef k=kubectl
+
+# autocomplete for helm
+source <(helm completion zsh)
+
+# autcomplete for chezmoi
+source <(chezmoi completion zsh)
+
+# --- AZURE CLI (az) COMPLETION ---
+autoload -U +X bashcompinit && bashcompinit
+{{- if eq .chezmoi.os "darwin" }}
+[ -s "$(brew --prefix)/etc/bash_completion.d/az" ] && source "$(brew --prefix)/etc/bash_completion.d/az"
+{{- end }}
+# -----------------------------------
+
+
+# fzf-tab Configuration (Set styles BEFORE sourcing the plugin)
+# Disable the default Zsh menu style, allowing fzf-tab to take over
+zstyle ':completion:*' menu no
+# Customize the fzf layout and appearance
+zstyle ':fzf-tab:complete:*:*' fzf-flags --layout=reverse --info=inline
+# Add preview to directories when completing 'cd'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -l $realpath'
+
+# Source fzf-tab (CLONED to ~/.zsh/fzf-tab)
+# This MUST be loaded after compinit and completion rules to hook into the system.
+[ -f ~/.zsh/fzf-tab/fzf-tab.plugin.zsh ] && source ~/.zsh/fzf-tab/fzf-tab.plugin.zsh
+
+# 4. HISTORY CONFIGURATION
+export HISTFILE="$HOME/.zsh_history"
+export HISTSIZE=10000
+export SAVEHIST=10000
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_FIND_NO_DUPS
+
+# 5. PLUGIN & FZF SOURCING
+# Source FZF's own key bindings and completion scripts
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Source Zsh-Autosuggestions
+[ -f ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh ] && source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# Source GRC (Generic Colouriser)
+{{- if eq .chezmoi.os "darwin" }}
+[ -f "$(brew --prefix)/etc/grc.zsh" ] && source "$(brew --prefix)/etc/grc.zsh"
+{{- else }}
+[ -f /etc/grc.zsh ] && source /etc/grc.zsh
+{{- end }}
+
+# Source Zsh-Syntax-Highlighting
+# Syntax highlighting MUST be loaded last for optimal behavior
+[ -f ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# 6. ENVIRONMENT VARIABLES & PROMPT
+
+# Initialize Starship Prompt (Must be late)
+eval "$(starship init zsh)"
+
+# --- CUSTOM KUBECTL ALIASES ---
+alias k='kubectl'
+
+# get argocdpasswd from kubernetes
+{{- if eq .chezmoi.os "darwin" }}
+alias argopasswd='printf "%s" "$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)" | pbcopy'
+alias ddpasswd='printf "%s" "$(kubectl -n defectdojo get secret defectdojo -o jsonpath="{.data.DD_ADMIN_PASSWORD}" | base64 -d)" | pbcopy'
+{{- else }}
+alias argopasswd='printf "%s" "$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)" | xclip -selection clipboard'
+alias ddpasswd='printf "%s" "$(kubectl -n defectdojo get secret defectdojo -o jsonpath="{.data.DD_ADMIN_PASSWORD}" | base64 -d)" | xclip -selection clipboard'
+{{- end }}
+
+# You can put your custom kl/kx functions here if desired
+# kl() { ... }
+# kx() { ... }
+
+# --- ZSHRC END ---
