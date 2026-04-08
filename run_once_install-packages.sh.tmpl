@@ -1,34 +1,64 @@
 #!/bin/sh
-sudo apt-get update
-sudo apt-get install grc gcc zsh python3-pip python3-virtualenvwrapper  build-essential
-git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
-sudo pip install virtualenvwrapper
+set -e
 
-git config --global user.email "oyvind.bergrud@storebrand.no"
+# Detect OS
+OS="$(uname)"
+
+mkdir -p "$HOME/.zsh" "$HOME/src"
+
+# --- macOS ---
+if [ "$OS" = "Darwin" ]; then
+    # Install Homebrew if missing
+    if ! command -v brew >/dev/null 2>&1; then
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
+
+    brew bundle --file="$(chezmoi source-path)/Brewfile"
+
+    # fzf shell integration
+    "$(brew --prefix)/opt/fzf/install" --all --key-bindings --completion --update-rc --no-bash --no-fish
+
+    # fzf-tab (not in Homebrew)
+    [ -d ~/.zsh/fzf-tab ] || git clone https://github.com/Aloxaf/fzf-tab ~/.zsh/fzf-tab
+
+    # zsh plugins (symlink from brew prefix so updates are handled by brew)
+    [ -d ~/.zsh/zsh-autosuggestions ] || ln -s "$(brew --prefix)/share/zsh-autosuggestions" ~/.zsh/zsh-autosuggestions
+    [ -d ~/.zsh/zsh-syntax-highlighting ] || ln -s "$(brew --prefix)/share/zsh-syntax-highlighting" ~/.zsh/zsh-syntax-highlighting
+
+    # Change shell to zsh (already default on macOS, but just in case)
+    if [ "$SHELL" != "/bin/zsh" ]; then
+        chsh -s /bin/zsh
+    fi
+
+# --- Linux ---
+elif [ "$OS" = "Linux" ]; then
+    ARCH="$(uname -m)"
+
+    sudo apt-get update
+    sudo apt-get install -y grc gcc zsh python3-pip build-essential
+
+    # Install Homebrew (Linuxbrew)
+    if ! command -v brew >/dev/null 2>&1; then
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    fi
+
+    brew bundle --file="$(chezmoi source-path)/Brewfile"
+
+    # fzf shell integration
+    "$(brew --prefix)/opt/fzf/install" --all --key-bindings --completion --update-rc --no-bash --no-fish
+
+    git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
+    git clone https://github.com/Aloxaf/fzf-tab ~/.zsh/fzf-tab
+
+    # Change shell to zsh
+    chsh -s /bin/zsh
+fi
+
+# --- Git global config (shared) ---
+git config --global user.email "oyvind.bergerud@storebrand.no"
 git config --global user.name "Øyvind Bergerud"
 
-# fzf
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install --all --key-bindings --completion --update-rc --no-bash --no-fish
-
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
-
-# fzf-tab (replaces default completion menu with fzf)
-git clone https://github.com/Aloxaf/fzf-tab ~/.zsh/fzf-tab
-
-# make src
-mkdir $HOME/src
-
-# starship
-curl -sS https://starship.rs/install.sh | sh -s -- -y
-
-# change shell
-chsh -s /bin/zsh
-
-# install homebrew
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-brew install az kubectl kubectx
 

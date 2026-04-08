@@ -3,7 +3,14 @@
 # 1. GPG AND TTY SETUP (Must be early)
 export GPG_TTY=$(tty)
 
-# 2. ZSH COMPLETION SETUP (CRUCIAL ORDERING for FZF-TAB)
+# 2. HOMEBREW SETUP (Must be before any 'brew' references)
+if [[ "$(uname)" == "Darwin" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -f /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+
+# 3. ZSH COMPLETION SETUP (CRUCIAL ORDERING for FZF-TAB)
 # Initialize Zsh's standard completion system
 autoload -U compinit
 # We use the -C flag to optimize startup by loading the cache if it's new enough.
@@ -45,14 +52,14 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -l $realpath'
 # This MUST be loaded after compinit and completion rules to hook into the system.
 [ -f ~/.zsh/fzf-tab/fzf-tab.plugin.zsh ] && source ~/.zsh/fzf-tab/fzf-tab.plugin.zsh
 
-# 3. HISTORY CONFIGURATION
+# 4. HISTORY CONFIGURATION
 export HISTFILE="$HOME/.zsh_history"
 export HISTSIZE=10000
 export SAVEHIST=10000
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_FIND_NO_DUPS
 
-# 4. PLUGIN & FZF SOURCING
+# 5. PLUGIN & FZF SOURCING
 # Source FZF's own key bindings and completion scripts
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -60,21 +67,17 @@ setopt HIST_FIND_NO_DUPS
 [ -f ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh ] && source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # Source GRC (Generic Colouriser)
-[ -f /etc/grc.zsh ] && source /etc/grc.zsh
+if type brew &>/dev/null; then
+    [ -f "$(brew --prefix)/etc/grc.zsh" ] && source "$(brew --prefix)/etc/grc.zsh"
+else
+    [ -f /etc/grc.zsh ] && source /etc/grc.zsh
+fi
 
 # Source Zsh-Syntax-Highlighting
 # Syntax highlighting MUST be loaded last for optimal behavior
 [ -f ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# 5. VIRTUALENVWRAPPER SETUP
-export WORKON_HOME=$HOME/.virtualenvs
-export PROJECT_HOME=$HOME/src
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
-
 # 6. ENVIRONMENT VARIABLES & PROMPT
-export PATH=$PATH:/snap/bin
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # Initialize Starship Prompt (Must be late)
 eval "$(starship init zsh)"
@@ -83,8 +86,13 @@ eval "$(starship init zsh)"
 alias k='kubectl'
 
 # get argocdpasswd from kubernetes
-alias argopasswd='printf "%s" "$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)" | xclip -selection clipboard'
-alias ddpasswd='printf "%s" "$(kubectl -n defectdojo get secret defectdojo -o jsonpath="{.data.DD_ADMIN_PASSWORD}" | base64 -d)" | xclip -selection clipboard'
+if [[ "$(uname)" == "Darwin" ]]; then
+    alias argopasswd='printf "%s" "$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)" | pbcopy'
+    alias ddpasswd='printf "%s" "$(kubectl -n defectdojo get secret defectdojo -o jsonpath="{.data.DD_ADMIN_PASSWORD}" | base64 -d)" | pbcopy'
+else
+    alias argopasswd='printf "%s" "$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)" | xclip -selection clipboard'
+    alias ddpasswd='printf "%s" "$(kubectl -n defectdojo get secret defectdojo -o jsonpath="{.data.DD_ADMIN_PASSWORD}" | base64 -d)" | xclip -selection clipboard'
+fi
 
 # You can put your custom kl/kx functions here if desired
 # kl() { ... }
