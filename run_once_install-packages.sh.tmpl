@@ -14,7 +14,7 @@ if [ "$OS" = "Darwin" ]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
     fi
 
-    brew bundle --file="$(chezmoi source-path)/Brewfile"
+    brew bundle --global
 
     # fzf shell integration
     "$(brew --prefix)/opt/fzf/install" --all --key-bindings --completion --update-rc --no-bash --no-fish
@@ -44,7 +44,7 @@ elif [ "$OS" = "Linux" ]; then
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
     fi
 
-    brew bundle --file="$(chezmoi source-path)/Brewfile"
+    brew bundle --global
 
     # fzf shell integration
     "$(brew --prefix)/opt/fzf/install" --all --key-bindings --completion --update-rc --no-bash --no-fish
