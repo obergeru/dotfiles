@@ -58,7 +58,7 @@ elif [ "$OS" = "Linux" ]; then
 fi
 
 # --- Git global config (shared) ---
-git config --global user.email "oyvind.bergerud@storebrand.no"
-git config --global user.name "Øyvind Bergerud"
+git config --global user.email {{ .email | quote }}
+git config --global user.name {{ .name | quote }}
 
 
