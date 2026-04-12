@@ -77,6 +77,9 @@ setopt HIST_FIND_NO_DUPS
 # Initialize Starship Prompt (Must be late)
 eval "$(starship init zsh)"
 
+# Run nerdfetch at shell startup
+command -v nerdfetch &>/dev/null && nerdfetch
+
 # --- CUSTOM KUBECTL ALIASES ---
 alias k='kubectl'
 

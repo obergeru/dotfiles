@@ -5,12 +5,16 @@
 tap "azure/azure-cli"
 
 # CLI tools
+brew "nerdfetch"
 brew "grc"
 brew "fzf"
 brew "starship"
 brew "kubectl"
 brew "kubectx"
 brew "azure-cli"
+
+# Fonts
+cask "font-fira-code-nerd-font"
 
 # Zsh plugins (symlinked into ~/.zsh by install script)
 brew "zsh-autosuggestions"

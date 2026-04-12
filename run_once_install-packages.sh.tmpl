@@ -26,6 +26,10 @@ if [ "$OS" = "Darwin" ]; then
     [ -d ~/.zsh/zsh-autosuggestions ] || ln -s "$(brew --prefix)/share/zsh-autosuggestions" ~/.zsh/zsh-autosuggestions
     [ -d ~/.zsh/zsh-syntax-highlighting ] || ln -s "$(brew --prefix)/share/zsh-syntax-highlighting" ~/.zsh/zsh-syntax-highlighting
 
+    # iTerm2: load preferences from dotfiles
+    defaults write com.googlecode.iterm2 PrefsCustomFolder -string "$HOME/.config/iterm2"
+    defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
+
     # Change shell to zsh (already default on macOS, but just in case)
     if [ "$SHELL" != "/bin/zsh" ]; then
         chsh -s /bin/zsh
