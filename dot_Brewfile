@@ -16,6 +16,10 @@ brew "azure-cli"
 # Fonts
 cask "font-fira-code-nerd-font"
 
+# Apps
+cask "iterm2"
+cask "copilot-cli"
+
 # Zsh plugins (symlinked into ~/.zsh by install script)
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
