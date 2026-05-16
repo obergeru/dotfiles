@@ -45,9 +45,6 @@ if [ "$OS" = "Darwin" ]; then
 elif [ "$OS" = "Linux" ]; then
     ARCH="$(uname -m)"
 
-    sudo apt-get update
-    sudo apt-get install -y grc gcc zsh python3-pip build-essential
-
     if [ "$IN_CONTAINER" -eq 0 ]; then
         # Install Homebrew (Linuxbrew)
         if ! command -v brew >/dev/null 2>&1; then
