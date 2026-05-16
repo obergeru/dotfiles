@@ -96,4 +96,7 @@ alias ddpasswd='printf "%s" "$(kubectl -n defectdojo get secret defectdojo -o js
 # kl() { ... }
 # kx() { ... }
 
+# kind (Kubernetes IN Docker) - use Podman as container runtime
+export KIND_EXPERIMENTAL_PROVIDER=podman
+
 # --- ZSHRC END ---
